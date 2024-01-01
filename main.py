@@ -17,24 +17,14 @@ player_x = 370
 player_y = 480
 x_vector = 3
 
-def player():
-    screen.blit(player_img, (player_x, player_y))
 
-def bounce_player():
-    global player_x
-    global player_y
-    global x_vector
-
-    if has_reached_border(player_x):
-        change_vector_direction()
-
-    player_x = player_x + x_vector
-
-    print(str(player_x))
+def draw_player(x: float, y: float) -> None:
+    screen.blit(player_img, (x, y))
 
 
-def has_reached_border(player_x):
-    return player_x >= 800 - player_img.get_width() or player_x <= 0
+# not currently used
+# def has_reached_border(player_x):
+#     return player_x >= 800 - player_img.get_width() or player_x <= 0
 
 def change_vector_direction():
     global x_vector
@@ -43,19 +33,55 @@ def change_vector_direction():
 
 # game loop
 running = True
+
+
+def move_left(player_x: int) -> None:
+    if x_vector > 0:
+        change_vector_direction()
+    player_x = player_x + x_vector
+
+    return player_x
+
+
+def move_right(player_x: int) -> None:
+    if x_vector < 0:
+        change_vector_direction()
+    player_x = player_x + x_vector
+
+    return player_x
+
+
+def set_player_x(param):
+    global player_x
+    player_x = param
+
+
+def move() -> None:
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+            set_player_x(move_left(player_x))
+        if event.key == pygame.K_RIGHT:
+            set_player_x(move_right(player_x))
+
+
+def quit_on_user_request():
+    global running
+    if event.type == pygame.QUIT:
+        running = False
+
+
+# main loop
 while running:
     # screen background color in RGB
     screen.fill((0, 0, 0))
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        quit_on_user_request()
+
+        move()
 
     # draws player on screen
-    player()
-    bounce_player()
+    draw_player(player_x, player_y)
     # this line is needed to maek the screen show the background color we set with screen.fill
     pygame.display.update()
 
-
 # if event.type == pygame.QUIT:
-
