@@ -2,7 +2,8 @@ import pygame
 
 # Initialize pygame
 pygame.init()
-
+clock = pygame.time.Clock()
+clock.tick(60)
 # create screen
 screen = pygame.display.set_mode((800, 600))
 
@@ -15,30 +16,16 @@ pygame.display.set_icon(icon)
 player_img = pygame.image.load("player.png")
 player_x = 370
 player_y = 480
-x_vector = 3
+# x_vector = 3
+playerX_change = 0
 
-def player():
+
+def player(player_x: float, player_y: float) -> None:
     screen.blit(player_img, (player_x, player_y))
 
-def bounce_player():
-    global player_x
-    global player_y
-    global x_vector
 
-    if has_reached_border(player_x):
-        change_vector_direction()
-
-    player_x = player_x + x_vector
-
-    print(str(player_x))
-
-
-def has_reached_border(player_x):
+def has_reached_border() -> bool:
     return player_x >= 800 - player_img.get_width() or player_x <= 0
-
-def change_vector_direction():
-    global x_vector
-    x_vector = x_vector * -1
 
 
 # game loop
@@ -50,12 +37,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                playerX_change = -1
+            if event.key == pygame.K_RIGHT:
+                playerX_change = 1
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                playerX_change = 0
+
+    # update player position
+    if has_reached_border():
+        playerX_change = player_img.get_rect()
+
+    player_x += playerX_change
     # draws player on screen
-    player()
-    bounce_player()
-    # this line is needed to maek the screen show the background color we set with screen.fill
+    player(player_x, player_y)
+    # this line is needed to make the screen show the background color we set with screen.fill
     pygame.display.update()
-
-
-# if event.type == pygame.QUIT:
-
